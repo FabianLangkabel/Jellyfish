@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+
+	<defs>
+		<style>
+			.cls-1 {
+			fill-rule: evenodd;
+			}
+		</style>
+	</defs>
+	<g
+	   id="layer1">
+		<circle
+		   style="fill:none;stroke:#000000;stroke-width: 1.5;stroke-linecap:round;stroke-miterlimit:8;stroke-dasharray:none"
+		   id="path10"
+		   cx="8"
+		   cy="8"
+		   r="7.2" />
+		<circle
+		   style="fill:none;stroke:#000000;stroke-width:.6;stroke-linecap:round;stroke-miterlimit:8;stroke-dasharray:none"
+		   id="path10-0"
+		   cx="8"
+		   cy="8"
+		   r="5" />
+		<circle
+		   style="fill:none;stroke:#000000;stroke-width:0.6;stroke-linecap:round;stroke-miterlimit:8;stroke-dasharray:none"
+		   id="path10-0-3"
+		   cx="8"
+		   cy="8"
+		   r="3" />
+		<path
+		   style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+		   d="M 1,8 15,8"
+		   id="path875" />
+		<path
+		   style="fill:none;stroke:#000000;stroke-width:1.2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+		   d="M 8,1 8,15"
+		   id="path877" />
+		<path
+		   style="fill:none;stroke:#000000;stroke-width:0.6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+		   d="m 3,3 10,10"
+		   id="path879" />
+		<path
+		   style="fill:none;stroke:#000000;stroke-width:0.6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+		   d="m 3,13 10,-10"
+		   id="path881" />
+		<path
+		   style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+		   d="M 12,13 C 12,8 10,2 8,2 6,2 4,8 4,13"
+		   id="path889" />
+	</g>
+</svg>
