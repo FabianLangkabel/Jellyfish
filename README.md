@@ -5,7 +5,7 @@ Jellyfish is a new program for performing and analyzing electron dynamics calcul
 
 
 ![alt text](https://github.com/FabianLangkabel/Jellyfish/blob/main/Examples/Screenshot_1.png?raw=true)
-![alt text](https://github.com/FabianLangkabel/Jellyfish/blob/main/Examples/Screenshot_1.png?raw=true)
+![alt text](https://github.com/FabianLangkabel/Jellyfish/blob/main/Examples/Screenshot_2.png?raw=true)
 
 ### JellyfishGUI and JellyfishCMD
 JellyfishGUI is the main program in the Program suit. With the help of the user interface, new calculations can be set up, edited, evaluated and executed. Alternatively, all calculations can be performed via a console through JellyfishCMD, for the usage in a HPC environments without graphical output.
@@ -74,6 +74,6 @@ F. Langkabel, P. Krause, A. Bande, submitted
 
 This paper also describes the structure and functionality of Jellyfish and introduces the existing plugins.
 
-In addition, Jellyfish was used in the following papers:
+In addition, Jellyfish was used in the following papers: \
 [Making optical excitations visible – An exciton wavefunction extension to the time-dependent configuration interaction method](https://doi.org/10.1016/j.chemphys.2022.111502) \
 [Quantum-Compute Algorithm for Exact Laser-Driven Electron Dynamics in Molecules](https://doi.org/10.1021/acs.jctc.2c00878)
