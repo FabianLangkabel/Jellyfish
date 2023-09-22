@@ -25,7 +25,7 @@ TDWF_Analysis_Window::TDWF_Analysis_Window(QC::TDCI_WF* wavefunction, Eigen::Vec
 	right_docker->setMinimumWidth(250);
 	addDockWidget(Qt::RightDockWidgetArea, right_docker);
 
-	//Tab 1
+	//Tab 1 Populations
 	{
 		QScrollArea* scrollArea_population = new QScrollArea;
 		scrollArea_population->setFrameShape(QFrame::NoFrame);
@@ -73,7 +73,7 @@ TDWF_Analysis_Window::TDWF_Analysis_Window(QC::TDCI_WF* wavefunction, Eigen::Vec
 		layout_population->addWidget(save_button);
 	}
 
-	//Tab 2
+	//Tab 2 Norm
 	{
 		QScrollArea* scrollArea_norm = new QScrollArea;
 		scrollArea_norm->setFrameShape(QFrame::NoFrame);
@@ -168,6 +168,62 @@ TDWF_Analysis_Window::TDWF_Analysis_Window(QC::TDCI_WF* wavefunction, Eigen::Vec
 		}
 	}
 
+	//Tab 5 HHG
+	if(is_transition_dipole_moments_set && is_laser_set)
+	{
+		QScrollArea* scrollArea_HHG = new QScrollArea;
+		scrollArea_HHG->setFrameShape(QFrame::NoFrame);
+		scrollArea_HHG->setWidgetResizable(true);
+		QWidget* content_HHG = new QWidget;
+		QVBoxLayout* layout_HHG = new QVBoxLayout;
+		layout_HHG->setAlignment(Qt::AlignTop);
+		content_HHG->setLayout(layout_HHG);
+		scrollArea_HHG->setWidget(content_HHG);
+		tab_widget->addTab(scrollArea_HHG, "HHG spectra");
+
+		layout_HHG->addWidget(new QLabel("Select Initial State of Propagation"));
+		select_initial_state_HHG = new QComboBox;
+		for (int i = 0; i < this->wavefunction->get_states().size(); i++)
+		{
+			select_initial_state_HHG->addItem("State: " + QString::number(this->wavefunction->get_states()[i]));
+		}
+		layout_HHG->addWidget(select_initial_state_HHG);
+
+		layout_HHG->addWidget(new QLabel("Select polarization"));
+		HHG_select_polarization = new QComboBox;
+		HHG_select_polarization->addItem("x");
+		HHG_select_polarization->addItem("y");
+		HHG_select_polarization->addItem("z");
+		layout_HHG->addWidget(HHG_select_polarization);
+
+		layout_HHG->addWidget(new QLabel("Select window function"));
+		HHG_select_window_function = new QComboBox;
+		HHG_select_window_function->addItem("None");
+		HHG_select_window_function->addItem("Hanning window");
+		layout_HHG->addWidget(HHG_select_window_function);
+
+		layout_HHG->addWidget(new QLabel("Select derivation order"));
+		HHG_select_derivation_order = new QComboBox;
+		HHG_select_derivation_order->addItem("0");
+		HHG_select_derivation_order->addItem("1");
+		HHG_select_derivation_order->addItem("2");
+		layout_HHG->addWidget(HHG_select_derivation_order);
+
+		layout_HHG->addWidget(new QLabel("Select highest harmonic order"));
+		HHG_select_Harmonic_order_range = new QLineEdit;
+		HHG_select_Harmonic_order_range->setValidator(new QDoubleValidator(0, 10000000, 2, this));
+		HHG_select_Harmonic_order_range->setText("100");
+		layout_HHG->addWidget(HHG_select_Harmonic_order_range);
+
+		QPushButton* plot_button = new QPushButton("Calculate HHG spectra");
+		connect(plot_button, &QPushButton::clicked, this, &TDWF_Analysis_Window::plot_hhg);
+		layout_HHG->addWidget(plot_button);
+
+		QPushButton* save_button = new QPushButton("Save to File");
+		connect(save_button, &QPushButton::clicked, this, &TDWF_Analysis_Window::save_hhg);
+		layout_HHG->addWidget(save_button);
+	}
+
 	//Central
 	chart = new QChart();
 	chart->legend()->hide();
@@ -208,6 +264,8 @@ void TDWF_Analysis_Window::plot_population()
 		chart->addSeries(series);
 	}
 	chart->createDefaultAxes();
+	chart->axes(Qt::Horizontal).back()->setTitleText("Time [a.u.]");
+
 	chart->legend()->setVisible(true);
 }
 
@@ -309,6 +367,7 @@ void TDWF_Analysis_Window::plot_norm()
 	}
 	chart->addSeries(series);
 	chart->createDefaultAxes();
+	chart->axes(Qt::Horizontal).back()->setTitleText("Time [a.u.]");
 	chart->legend()->setVisible(false);
 }
 
@@ -361,6 +420,7 @@ void TDWF_Analysis_Window::plot_pes()
 
 	chart->addSeries(series);
 	chart->createDefaultAxes();
+	chart->axes(Qt::Horizontal).back()->setTitleText("Time [a.u.]");
 	chart->legend()->setVisible(false);
 }
 
@@ -451,6 +511,7 @@ void TDWF_Analysis_Window::plot_tddipolemoments()
 	chart->addSeries(series_z);
 	//chart->addSeries(series_total);
 	chart->createDefaultAxes();
+	chart->axes(Qt::Horizontal).back()->setTitleText("Time [a.u.]");
 	chart->legend()->setVisible(true);
 }
 
@@ -507,6 +568,173 @@ void TDWF_Analysis_Window::save_tddipolemoments()
 		std::ofstream outfile;
 		outfile.open(FileName.toStdString());
 		outfile << "Time x y z abs";
+		outfile << std::endl;
+		outfile << all_data;
+		outfile.close();
+	}
+}
+
+void TDWF_Analysis_Window::plot_hhg()
+{
+	chart->setTitle("HHG spectra");
+	chart->removeAllSeries();
+
+	int initial_state = this->select_initial_state_pes->currentIndex();
+	std::vector<double> times = this->wavefunction->get_times();
+	
+	QSplineSeries* series = new QSplineSeries();
+
+	std::vector<Eigen::MatrixXcd> ci_vectors = this->wavefunction->get_ci_vectors();
+	std::vector<Eigen::MatrixXd> transition_dipole_moments = *(this->_TransitionDipoleMoments.lock().get());
+
+	std::vector<double> td_dipole;
+	for (int timestep = 0; timestep < times.size(); timestep++)
+	{
+		std::complex<double> x(0, 0);
+		std::complex<double> y(0, 0);
+		std::complex<double> z(0, 0);
+		for (int p = 0; p < ci_vectors[0].rows(); p++)
+		{
+			{
+				for (int q = 0; q < ci_vectors[0].rows(); q++)
+				{
+					{
+						std::complex<double> prefac = ci_vectors[timestep](p, initial_state) * std::conj(ci_vectors[timestep](q, initial_state));
+						x += prefac * transition_dipole_moments[0](p, q);
+						y += prefac * transition_dipole_moments[1](p, q);
+						z += prefac * transition_dipole_moments[2](p, q);
+					}
+				}
+			}
+		}
+
+		if(HHG_select_polarization->currentIndex() == 0){ td_dipole.push_back(x.real()); }
+		else if(HHG_select_polarization->currentIndex() == 1){ td_dipole.push_back(y.real()); }
+		else if(HHG_select_polarization->currentIndex() == 2){ td_dipole.push_back(z.real()); }
+	}
+	
+	//Apply window function
+	for(int i = 0; i < td_dipole.size(); i++)
+	{
+		if(HHG_select_window_function->currentIndex() == 1) //Hanning window
+		{
+			td_dipole[i] = td_dipole[i] * (0.5 + 0.5 * cos((2 *  3.14159265359 * i) / (td_dipole.size() - 1)));
+		}
+	}
+
+	if(HHG_select_derivation_order->currentIndex() == 1){td_dipole = gradient(td_dipole); }
+	if(HHG_select_derivation_order->currentIndex() == 2){td_dipole = gradient(gradient(td_dipole)); }
+
+	Eigen::FFT<double> fft;
+	std::vector<std::complex<double>> freqvec;
+	fft.fwd(freqvec, td_dipole);
+
+	double dt = times[1] - times[0];
+	double sr = 1/dt;
+	double T = times.size() / sr;
+	double omega0 = this->_laser.lock().get()->get_frequency();
+	std::vector<double> freqs;
+	for (int timestep = 0; timestep < times.size(); timestep++)
+	{
+		freqs.push_back((timestep/T * 2 * 3.14159265359) / omega0);
+	}
+	double PropTime = times[times.size() - 1];
+	for(int freq_idx = 0; freq_idx < freqvec.size(); freq_idx++)
+	{
+		double val = abs(freqvec[freq_idx] * freqvec[freq_idx]);
+		val = val * (1/PropTime) * (1/PropTime);
+		val = log10(val);
+		//series->append(freqs[freq_idx], val);
+		if(freqs[freq_idx] < this->HHG_select_Harmonic_order_range->text().toDouble())
+		{
+			series->append(freqs[freq_idx], val);
+		}
+	}
+
+	chart->addSeries(series);
+	chart->createDefaultAxes();
+	chart->axes(Qt::Horizontal).back()->setTitleText("Harmonic Order");
+	chart->legend()->setVisible(false);
+}
+
+void TDWF_Analysis_Window::save_hhg()
+{
+	QString FileName = QFileDialog::getSaveFileName(nullptr, tr("Save Data File"), QDir::homePath(), tr("txt File (*.txt)"));
+
+	if (!FileName.isEmpty())
+	{
+		int initial_state = this->select_initial_state_pes->currentIndex();
+		std::vector<double> times = this->wavefunction->get_times();
+
+		Eigen::MatrixXd all_data(times.size(), 2);
+
+		std::vector<Eigen::MatrixXcd> ci_vectors = this->wavefunction->get_ci_vectors();
+		std::vector<Eigen::MatrixXd> transition_dipole_moments = *(this->_TransitionDipoleMoments.lock().get());
+
+		std::vector<double> td_dipole;
+		for (int timestep = 0; timestep < times.size(); timestep++)
+		{
+			std::complex<double> x(0, 0);
+			std::complex<double> y(0, 0);
+			std::complex<double> z(0, 0);
+			for (int p = 0; p < ci_vectors[0].rows(); p++)
+			{
+				{
+					for (int q = 0; q < ci_vectors[0].rows(); q++)
+					{
+						{
+							std::complex<double> prefac = ci_vectors[timestep](p, initial_state) * std::conj(ci_vectors[timestep](q, initial_state));
+							x += prefac * transition_dipole_moments[0](p, q);
+							y += prefac * transition_dipole_moments[1](p, q);
+							z += prefac * transition_dipole_moments[2](p, q);
+						}
+					}
+				}
+			}
+
+			if(HHG_select_polarization->currentIndex() == 0){ td_dipole.push_back(x.real()); }
+			else if(HHG_select_polarization->currentIndex() == 1){ td_dipole.push_back(y.real()); }
+			else if(HHG_select_polarization->currentIndex() == 2){ td_dipole.push_back(z.real()); }
+		}
+
+		//Apply window function
+		for(int i = 0; i < td_dipole.size(); i++)
+		{
+			if(HHG_select_window_function->currentIndex() == 1) //Hanning window
+			{
+				td_dipole[i] = td_dipole[i] * (0.5 - 0.5 * cos((2 *  3.14159265359 * i) / (td_dipole.size() - 1)));
+			}
+		}
+
+		if(HHG_select_derivation_order->currentIndex() == 1){td_dipole = gradient(td_dipole); }
+		if(HHG_select_derivation_order->currentIndex() == 2){td_dipole = gradient(gradient(td_dipole)); }
+
+		Eigen::FFT<double> fft;
+		std::vector<std::complex<double>> freqvec;
+		fft.fwd(freqvec, td_dipole);
+
+		double dt = times[1] - times[0];
+		double sr = 1/dt;
+		double T = times.size() / sr;
+		double omega0 = this->_laser.lock().get()->get_frequency();
+		std::vector<double> freqs;
+		for (int timestep = 0; timestep < times.size(); timestep++)
+		{
+			freqs.push_back((timestep/T * 2 * 3.14159265359) / omega0);
+		}
+		double PropTime = times[times.size() - 1];
+		for(int freq_idx = 0; freq_idx < freqvec.size(); freq_idx++)
+		{
+			double val = abs(freqvec[freq_idx] * freqvec[freq_idx]);
+			val = val * (1/PropTime) * (1/PropTime);
+			val = log10(val);
+			all_data(freq_idx, 0) = freqs[freq_idx];
+			all_data(freq_idx, 1) = val;
+		}
+
+		std::ofstream outfile;
+		outfile.open(FileName.toStdString());
+		outfile << "omega/omega0	log10P(omega)";
 		outfile << std::endl;
 		outfile << all_data;
 		outfile.close();
@@ -654,4 +882,26 @@ int TDWF_Analysis_Window::find_closest_timepoint(double time)
 		}
 	}
 	return 0;
+}
+
+
+std::vector<double> TDWF_Analysis_Window::gradient(std::vector<double> input){
+    if (input.size() <= 1) return input;
+    std::vector<double> res;
+    for(int j=0; j<input.size(); j++) {
+        int j_left = j - 1;
+        int j_right = j + 1;
+        if (j_left < 0) {
+            j_left = 0;
+            j_right = 1;
+        }
+        if (j_right >= input.size()){
+            j_right = input.size() - 1;
+            j_left = j_right - 1;
+        }
+        // gradient value at position j
+        double dist_grad = (input[j_right] - input[j_left]) / 2.0;
+        res.push_back(dist_grad);
+    }
+    return res;
 }

@@ -24,7 +24,7 @@ JellyfishGUI and JellyfishCMD only provide the user interface, like the file for
 More details about the methods implemented so far, the structure of Jellyfish as well as the usage can be found in the publications listed below.
 
 ## Compilation/Installation
-
+Currently, a compilation of the source code using Cmake is necessary for installation. Hereby the libraries listed in the following chapter must be installed and if necessary paths in the Cmake files must be adapted. We are currently working on a way to make Jellyfish available directly as binaries.
 
 ### Required libraries, tools and compilers
 C++20 compiler \
@@ -60,7 +60,9 @@ The "Examples" folder contains the following examples of different types of calc
 
 | Example | Description |
 | ------ | ------ |
-| Guanine | Shows the Orca input of a TDDFT calculation on the example of Guanine, how the output is imported into Jellyfish and a subsequent dynamics calculation and analysis. |
+| Guanine excitation| Shows the Orca input of a TDDFT calculation on the example of Guanine, how the output is imported into Jellyfish and a subsequent dynamics calculation and analysis. |
+| Quantum dot ionization| Demonstrates the use of even-tempered basis sets and complex absorption potentials to simulate laser ionization in model potentials. |
+| H2 HHG| Example of the calculation of high harmonic generation spectra of H2 using complex absorption potentials. |
 
 ## Contribution
 Issues and pull requests can be submitted via Github. If you develop new plugins we can link them here. For further questions you can write a mail to: fabian.langkabel@helmholtz-berlin.de

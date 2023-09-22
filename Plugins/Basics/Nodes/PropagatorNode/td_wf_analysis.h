@@ -10,6 +10,7 @@
 #include <fstream>
 #include <complex>
 
+#include <unsupported/Eigen/FFT>
 
 #include "../../Lib/header/tdci_wf.h"
 #include "../../Lib/header/laser.h"
@@ -59,5 +60,15 @@ private:
 
     void open_polarization_window();
     void calculate_polarization(QLineEdit* starttime_lineedit, QLineEdit* endtime_lineedit, QLineEdit* polarization_lineedit);
+
+    QComboBox* select_initial_state_HHG;
+    QComboBox* HHG_select_polarization;
+    QComboBox* HHG_select_window_function;
+    QComboBox* HHG_select_derivation_order;
+    QLineEdit* HHG_select_Harmonic_order_range;
+    void plot_hhg();
+    void save_hhg();
+    std::vector<double> gradient(std::vector<double> input);
+
     int find_closest_timepoint(double time);
 };
