@@ -5,15 +5,13 @@ project(JellyfishPluginOrcaInterface CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_PREFIX_PATH "/scratch/mmz/Libraries/QT/5.15.2/gcc_64/")
+set(CMAKE_PREFIX_PATH "/usr/local/Qt6/")
 
 include_directories(
-  "${CMAKE_SOURCE_DIR}/Libraries/eigen"
-  "${CMAKE_SOURCE_DIR}/Libraries/libzip/include" 
+  "/usr/local/eigen"
 )
 
 link_directories(
-  "${CMAKE_SOURCE_DIR}/Libraries/libzip/lib64"
 )
 
 find_package(Qt6
@@ -25,36 +23,8 @@ find_package(Qt6
    Charts
 )
 
-if (NOT Qt6_FOUND)
-  find_package(Qt5 5.13
-    COMPONENTS
-     Core
-     Widgets
-     Gui
-     OpenGL
-     Charts
-  )
-endif()
-
-if (NOT (Qt6_FOUND OR Qt5_FOUND))
-  message(FATAL_ERRROR "Qt libraries were not found.")
-endif()
-
-if(WIN32)
-  set(CXXFLAGS -O2 -s -Wall -Wextra)
-  set(LDLIBS -s pthread stdc++fs ole32 oleaut32 psapi advapi32)
-else()
-  set(CXXFLAGS -O2 -s -Wall -Wextra)
-  set(LDLIBS -s dl pthread stdc++fs)
-endif()
-
-if(MAX_PLUGINS_ARGS)
-  add_definitions(-DMAX_PLUGINS_ARGS=${MAX_PLUGINS_ARGS})
-endif()
-
-if(NDEBUG)
-  add_definitions(-DNDEBUG)
-endif()
+set(CXXFLAGS -O2 -s -Wall -Wextra)
+set(LDLIBS -s dl pthread stdc++fs)
 
 set(SOURCE_FILES
 "plugin.cxx"

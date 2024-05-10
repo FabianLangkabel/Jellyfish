@@ -39,6 +39,7 @@ namespace QC
 		void set_pulse_duration(double duration) { m_pulse_duration = duration;}
 		void set_amplitude(double amplitude) { m_amplitude = amplitude; }
 		void set_frequency(double frequency) { m_frequency = frequency; }
+		double get_frequency() { return m_frequency; }
 		void set_oscillation_function(int osc_function) { oscillation_function = (OscillationFunction) osc_function; }
 		void set_polarization(std::vector<double> polarization_vector, int polarization_index) {
 			this->polarization_vector = std::move(polarization_vector);

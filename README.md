@@ -24,19 +24,43 @@ JellyfishGUI and JellyfishCMD only provide the user interface, like the file for
 More details about the methods implemented so far, the structure of Jellyfish as well as the usage can be found in the publications listed below.
 
 ## Compilation/Installation
-Currently, a compilation of the source code using Cmake is necessary for installation. Hereby the libraries listed in the following chapter must be installed and if necessary paths in the Cmake files must be adapted. We are currently working on a way to make Jellyfish available directly as binaries.
 
-### Required libraries, tools and compilers
+### Compilation in devcontainer
+Currently, the easiest way to compile Jellyfish is to use a [devcontainer](https://code.visualstudio.com/docs/devcontainers/containers). To do this, Docker and VSCode with the corresponding extension must first be installed. Then the cloned git repository can be opened in a devcontainer, which creates a proper container and compiles and installs all necessary libraries from source. Once the container has been successfully built, Jellyfish can be compiled in VSCode manually or with the 
+
+```
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    cmake --build . -j4 && \
+    mkdir JellyfishGUI/Plugins && \
+    mkdir JellyfishGUI/basissets && \
+    cp Plugins/Basics/libBasics.so JellyfishGUI/Plugins && \
+    cp Plugins/OrcaInterface/libOrcaInterface.so JellyfishGUI/Plugins && \
+    cp Plugins/Visualization/libVisualization.so JellyfishGUI/Plugins && \
+    cp Plugins/QuantumComputing/libQuantumComputing.so JellyfishGUI/Plugins && \
+    mkdir JellyfishCMD/Plugins && \
+    mkdir JellyfishCMD/basissets && \
+    cp Plugins/Basics/libBasics.so JellyfishCMD/Plugins && \
+    cp Plugins/OrcaInterface/libOrcaInterface.so JellyfishCMD/Plugins && \
+    cp Plugins/Visualization/libVisualization.so JellyfishCMD/Plugins && \
+    cp Plugins/QuantumComputing/libQuantumComputing.so JellyfishCMD/Plugins
+```
+
+command and then finally executed. The Dockerfile of the devcontainer also serves as a template for a “normal” Docker Jellyfish container.
+
+
+### Libraries, tools and compilers used
 C++20 compiler \
 [Cmake](https://cmake.org/) \
-[Qt](https://www.qt.io/) (Version 5 or 6) \
+[Qt](https://www.qt.io/) (Version 6) \
 [zlib](https://www.zlib.net/) \
 [libzip](https://libzip.org/) \
 [eigen](https://eigen.tuxfamily.org/index.php) (Library for linear algebra; required for all existing plugins) \
-[libcint](https://github.com/sunqm/libcint) (Library for calculating GTO integrals; required by Basic, Visualization and QuantumComputing plugin; requires installation of a BLAS library) \
+[libcint](https://github.com/sunqm/libcint) (Library for calculating GTO integrals; required by Basic, Visualization and QuantumComputing plugin) \
 [muparser](https://beltoforion.de/en/muparser/) (Library for parsing mathematical equations; required for Basic Plugin) \
 [QuEST](https://quest.qtechtheory.org/) (Library for simulating quantum computers; required for the QuantumComputing plugin) \
-[VTK](https://vtk.org/) (library for visualization; required by VisualizationPlugin; optional QT, OpenGL and Chemistry modules are also required)
+[VTK](https://vtk.org/) (library for visualization; required by VisualizationPlugin)
 
 Libraries for plugins only need to be installed if the corresponding plugins are to be compiled or executed.
 
@@ -45,15 +69,6 @@ In addition, the following modified libraries are directly included in the code:
 [stduuid](https://github.com/mariusbancila/stduuid),
 [Qt Node Editor](https://github.com/paceholder/nodeeditor),
 [C++ Plugin framework](https://github.com/djurodrljaca/CppPluginFramework)
-
-### Procedure for compiling
-For compiling, all necessary libraries must be installed and referenced in the CmakeLists of the individual components or plugins. 
-
-To compile JellyfishGUI and JellyfishCMD you need to compile first the JellyfishCore while the plugins only depend on header files of JellyfishCore.
-
-Once Jellyfish and plugins have been compiled, a folder named "Plugins" must be created in the JellyfishGUI and JellyfishCMD folders and the compiled plugins must be copied into these folders. Furthermore, if standard quantum chemistry basis sets are needed, the "basissets" folder from this repository must also be copied to the correponding JellyfishGUI and JellyfishCMD folders.
-
-A detailed installation guide and optimized CMakeLists file will follow.
 
 ## Usage and examples
 The "Examples" folder contains the following examples of different types of calculations. The use of the program is quite self-explanatory. Otherwise, more information can be found in the publications and more tutorials will follow.
@@ -65,13 +80,13 @@ The "Examples" folder contains the following examples of different types of calc
 | H2 HHG| Example of the calculation of high harmonic generation spectra of H2 using complex absorption potentials. |
 
 ## Contribution
-Issues and pull requests can be submitted via Github. If you develop new plugins we can link them here. For further questions you can write a mail to: fabian.langkabel@helmholtz-berlin.de
+Issues and pull requests can be submitted via Github. If you develop new plugins we can link them here. For further questions you can write a mail to: pascal.krause@aci.uni-hannover.de or fabian.langkabel@algorithmiq.fi
 
 ## Publications
 If you use Jellyfish please cite the following paper:
 
 ```
-F. Langkabel, P. Krause, A. Bande, submitted
+ Langkabel F, Krause P, Bande A. Jellyfish: A modular code for wave function-based electron dynamics simulations and visualizations on traditional and quantum compute architectures. WIREs Comput Mol Sci. 2024; 14(1):e1696. https://doi.org/10.1002/wcms.1696
 ```
 
 This paper also describes the structure and functionality of Jellyfish and introduces the existing plugins.

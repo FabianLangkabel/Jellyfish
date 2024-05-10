@@ -47,9 +47,11 @@ void CombineOneElectronIntegralsNode::calculate()
 
 void CombineOneElectronIntegralsNode::NodeInspector(QWidget* Inspector)
 {
+    /*
     QVBoxLayout* lay = new QVBoxLayout();
 
     Inspector->setLayout(lay);
+    */
 }
 
 bool CombineOneElectronIntegralsNode::InPortAllowMultipleConnections(int Port)

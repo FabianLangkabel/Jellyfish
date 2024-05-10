@@ -6,14 +6,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(APP_EXE "JellyfishCMD")
 
-include_directories(
-  "${CMAKE_SOURCE_DIR}/Libraries/libzip/include" 
-)
-
-link_directories(
-  "${CMAKE_SOURCE_DIR}/Libraries/libzip/lib64"
-)
-
 set(SOURCE_FILES
 "main.cpp"
 "interface.cpp"

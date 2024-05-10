@@ -22,9 +22,6 @@
 #include "../../Lib/header/CIResults.h"
 //#include "../../ThirdParty/eigen/Eigen/Dense"
 
-
-QT_CHARTS_USE_NAMESPACE
-
 class EvaluateTIDWidget : public QWidget
 {
 public:

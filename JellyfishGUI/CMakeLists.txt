@@ -4,15 +4,7 @@ project(JellyfishGUI CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_PREFIX_PATH "/scratch/mmz/Libraries/QT/5.15.2/gcc_64/")
-
-include_directories(
-  "${CMAKE_SOURCE_DIR}/Libraries/libzip/include" 
-)
-
-link_directories(
-  "${CMAKE_SOURCE_DIR}/Libraries/libzip/lib64"
-)
+set(CMAKE_PREFIX_PATH "/usr/local/Qt6/")
 
 find_package(Qt6
   COMPONENTS
@@ -23,25 +15,10 @@ find_package(Qt6
    Charts
 )
 
-if (NOT Qt6_FOUND)
-  find_package(Qt5 5.13
-    COMPONENTS
-     Core
-     Widgets
-     Gui
-     OpenGL
-     Charts
-  )
-endif()
-
-if (NOT (Qt6_FOUND OR Qt5_FOUND))
-  message(FATAL_ERRROR "Qt libraries were not found.")
-endif()
 
 qt_add_resources(RESOURCES ./Nodeeditor/resources/resources.qrc)
 qt_add_resources(RESOURCES ./icons.qrc)
 
-#set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOMOC ON)
 
 set(APP_EXE "JellyfishGUI")

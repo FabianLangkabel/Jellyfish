@@ -15,8 +15,6 @@
 #include "../../Lib/header/tdci_wf.h"
 #include "../../Lib/header/laser.h"
 
-QT_CHARTS_USE_NAMESPACE
-
 
 class TDWF_Analysis_Window : public QMainWindow
 {

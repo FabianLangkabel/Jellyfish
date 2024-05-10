@@ -249,7 +249,7 @@ void TDWF_Analysis_Window::plot_population()
 	//msgBox.setText(QString::number(initial_state));
 	//msgBox.exec();
 
-	QStringList series_list = this->states_for_population->text().split(QRegExp("\\s+"));
+	QStringList series_list = this->states_for_population->text().split(QRegularExpression("\\s+"));
 	for (int i = 0; i < series_list.size(); i++)
 	{
 		QSplineSeries* series = new QSplineSeries();
@@ -280,7 +280,7 @@ void TDWF_Analysis_Window::save_population()
 		std::vector<double> times = this->wavefunction->get_times();
 		std::vector<Eigen::MatrixXcd> ci_vectors = this->wavefunction->get_ci_vectors();
 
-		QStringList series_list = this->states_for_population->text().split(QRegExp("\\s+"));
+		QStringList series_list = this->states_for_population->text().split(QRegularExpression("\\s+"));
 		Eigen::MatrixXd all_data(times.size(), series_list.size() + 1);
 
 

@@ -13,8 +13,6 @@
 #include "../../Lib/header/hadamard_test_pauli_sum_quest.h"
 #include "../../save_load.h"
 
-QT_CHARTS_USE_NAMESPACE
-
 using json = nlohmann::json;
 
 
